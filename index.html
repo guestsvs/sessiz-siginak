@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessiz Sığınak | Premium</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ==========================================================================
+           1. KÖK DEĞİŞKENLER VE TEMA AYARLARI (PREMIUM DARK MODE)
+           ========================================================================== */
+        :root {
+            /* Renk Paleti */
+            --bg-base: #050507;
+            --bg-surface: rgba(18, 18, 22, 0.65);
+            --bg-surface-hover: rgba(25, 25, 30, 0.8);
+            
+            /* Vurgu Renkleri (Kan Kırmızı / Şarap Kırmızı) */
+            --accent-primary: #be123c; /* Rose-700 */
+            --accent-secondary: #e11d48; /* Rose-600 */
+            --accent-glow: rgba(190, 18, 60, 0.25);
+            
+            /* Metin Renkleri */
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #64748b;
+            
+            /* Sınır ve Gölgeler */
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(190, 18, 60, 0.4);
+            --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.8);
+            --shadow-glow: 0 0 30px var(--accent-glow);
+            
+            /* Animasyon Eğrileri (Apple tarzı pürüzsüz geçişler) */
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ==========================================================================
+           2. SIFIRLAMA VE TEMEL YAPILANDIRMA
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto; /* Dikey kaydırma aktif */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 8vh 20px; /* Üstten ve alttan profesyonel boşluk */
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Zarif Kaydırma Çubuğu (Scrollbar) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* ==========================================================================
+           3. ARKA PLAN AMBİYANS EFEKTLERİ
+           ========================================================================== */
+        .ambient-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: radial-gradient(circle at 50% 0%, rgba(30, 5, 10, 0.8) 0%, var(--bg-base) 70%);
+        }
+
+        .ambient-glow-orb {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vh;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseGlow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* ==========================================================================
+           4. SİNEMATİK GİRİŞ VİDEOSU KATMANI
+           ========================================================================== */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.8s;
+        }
+
+        #intro-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+            filter: contrast(1.2) grayscale(40%);
+        }
+
+        /* ==========================================================================
+           5. ANA İÇERİK DÜZENİ VE GLASSMORPHISM
+           ========================================================================== */
+        #main-wrapper {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 2.5s ease;
+            width: 100%;
+            max-width: 800px; /* Genişletilmiş ve daha rahat görünüm */
+            display: flex;
+            flex-direction: column;
+            gap: 45px; /* Bölümler arası nefes boşluğu */
+            z-index: 10;
+            position: relative;
+        }
+
+        /* SAAT TASARIMI (Minimal & Elegant) */
+        .header-section {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-clock {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--text-heading);
+            font-weight: 300;
+            letter-spacing: 6px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock-subtitle {
+            font-size: 0.85rem;
+            color: var(--accent-primary);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* ==========================================================================
+           6. PROFESYONEL SEKMELER (NAVIGATION)
+           ========================================================================== */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 25px;
+            position: relative;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tab-button:hover {
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-button:hover i {
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            color: var(--text-heading);
+            background: rgba(190, 18, 60, 0.08); /* Hafif kırmızı arkaplan */
+        }
+
+        .tab-button.active i {
+            color: var(--accent-secondary);
+        }
+
+        /* Aktif sekme için dinamik alt çizgi animasyonu */
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center;
+        }
+
+        .tab-button.active::after {
+            transform: scaleX(1);
+        }
+
+        /* ==========================================================================
+           7. SAYFA İÇERİK KARTLARI (CAM EFEKTİ)
+           ========================================================================== */
+        .content-panel {
+            display: none;
+            background: var(--bg-surface);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-light);
+            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Üstten ışık vurma detayı */
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: var(--shadow-soft), var(--shadow-glow);
+            min-height: 500px;
+            position: relative;
+        }
+
+        .content-panel.active {
+            display: block;
+            animation: panelFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes panelFadeIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ==========================================================================
+           8. ANI ODASI (GALERİ) TASARIMI
+           ========================================================================== */
+        .gallery-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .image-frame {
+            width: 100%;
+            max-width: 650px;
+            height: 450px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+            opacity: 0.6;
+            filter: blur(6px) grayscale(60%) sepia(20%);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(1.05);
+        }
+
+        .image-frame:hover img {
+            filter: blur(0px) grayscale(0%) sepia(0%);
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .gallery-quote {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
+            color: var(--text-heading);
+            font-size: 1.25rem;
+            text-align: center;
+            line-height: 1.8;
+            max-width: 85%;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* ==========================================================================
+           9. ŞİİR DEFTERİ MOTORU VE AKIŞI
+           ========================================================================== */
+        .poetry-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            height: 100%;
+        }
+
+        /* Şiir Penceresi - Kendi içinde kayan ama taşırmayan alan */
+        .poetry-viewport {
+            height: 380px;
+            position: relative;
+            overflow: hidden;
+            /* Kusursuz karanlığa gömülme efekti */
+            mask-image: linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%);
+        }
+
+        .poetry-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 80px; /* Şiirler arası geniş mesafe */
+            /* Animasyon JS üzerinden tetiklenecek ki ekleme yapılınca boyutu doğru okusun */
+            animation: scrollPoetry 50s linear infinite;
+        }
+
+        /* Üzerine gelince şiiri okumak için DURDUR */
+        .poetry-viewport:hover .poetry-stream {
+            animation-play-state: paused !important;
+        }
+
+        @keyframes scrollPoetry {
+            0% { transform: translateY(380px); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .poem-block {
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .poem-block h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent-secondary);
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .poem-block p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            line-height: 2.4;
+            color: var(--text-body);
+            white-space: pre-line;
+            font-style: italic;
+        }
+
+        .poem-separator {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-focus), transparent);
+            margin: 40px auto 0 auto;
+        }
+
+        /* ==========================================================================
+           10. MODERN FORM TASARIMI (ŞİİR EKLEME)
+           ========================================================================== */
+        .editor-form {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .editor-header {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            color: var(--text-heading);
+            font-weight: 600;
+            margin-bottom: -5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .editor-header i {
+            color: var(--accent-primary);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .premium-input {
+            width: 100%;
+            background: rgba(10, 10, 12, 0.8);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 18px 20px;
+            color: var(--text-heading);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .premium-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .premium-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px rgba(190, 18, 60, 0.15);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        textarea.premium-input {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.8;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+
+        .submit-action-btn {
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-secondary);
+            padding: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: var(--transition-smooth);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+
+        .submit-action-btn:hover {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 10px 20px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================================
+           11. GELİŞMİŞ DERTLEŞME (AI CHAT) ALANI
+           ========================================================================== */
+        .chat-layout {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            justify-content: space-between;
+        }
+        
+        .message-history {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-right: 20px;
+            margin-bottom: 25px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-bubble {
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            max-width: 85%;
+            position: relative;
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .chat-bubble.user {
+            background: rgba(190, 18, 60, 0.1);
+            border: 1px solid rgba(190, 18, 60, 0.2);
+            color: var(--text-heading);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .chat-bubble.ai {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--accent-primary);
+            color: var(--text-body);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Gerçekçi "Yazıyor..." Efekti */
+        .typing-status {
+            display: none;
+            align-self: flex-start;
+            padding: 15px 20px;
+            background: transparent;
+            border-left: 4px solid var(--text-muted);
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .dot-pulse {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            height: 10px;
+        }
+
+        .dot-pulse span {
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            animation: wave 1.5s infinite ease-in-out;
+        }
+
+        .dot-pulse span:nth-child(1) { animation-delay: 0s; }
+        .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        /* Sohbet Gönderme Alanı */
+        .chat-input-wrapper {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 5px;
+            transition: var(--transition-smooth);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(190, 18, 60, 0.15), inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 16px 20px;
+            color: var(--text-heading);
+            font-family: inherit;
+            font-size: 1.05rem;
+        }
+
+        .chat-input-wrapper input:focus {
+            outline: none;
+        }
+
+        .chat-input-wrapper button {
+            background: var(--accent-primary);
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            padding: 0 25px;
+            margin: 5px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .chat-input-wrapper button:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px var(--accent-glow);
+        }
+
+        /* ==========================================================================
+           12. FOOTER (ALT BİLGİ)
+           ========================================================================== */
+        .site-footer {
+            text-align: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.5;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-background"></div>
+    <div class="ambient-glow-orb"></div>
+
+    <div id="intro-overlay">
+        <video id="intro-video" autoplay muted playsinline>
+            <source src="videos/dalga.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <main id="main-wrapper">
+        
+        <header class="header-section">
+            <div class="clock-subtitle">Zaman Geçiyor</div>
+            <div class="live-clock" id="live-clock">00:00:00</div>
+        </header>
+
+        <nav class="nav-container">
+            <button class="tab-button active" id="btn-galeri" onclick="switchTab('galeri')">
+                <i class="far fa-images"></i> Anı Odası
+            </button>
+            <button class="tab-button" id="btn-siir" onclick="switchTab('siir')">
+                <i class="fas fa-feather"></i> Şiir Defteri
+            </button>
+            <button class="tab-button" id="btn-dertlesme" onclick="switchTab('dertlesme')">
+                <i class="far fa-comment-dots"></i> Dertleşme
+            </button>
+        </nav>
+
+        <section id="page-galeri" class="content-panel active">
+            <div class="gallery-layout">
+                <div class="image-frame">
+                    <img src="resimler/foto1.jpg" alt="Donmuş Anı">
+                </div>
+                <blockquote class="gallery-quote">
+                    "Ben Kafirler Şehrinde Yalnız Kalmış bir Müslümanım.
+                    "Sen Sesini Özlediğim Ezansın"
+                </blockquote>
+            </div>
+        </section>
+
+        <section id="page-siir" class="content-panel">
+            <div class="poetry-layout">
+                
+                <div class="poetry-viewport">
+                    <div class="poetry-stream" id="poetry-stream-container">
+                        </div>
+                </div>
+
+                <div class="editor-form">
+                    <div class="editor-header">
+                        <i class="fas fa-pen-fancy"></i> Sayfaya Bir İz Bırak
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="poem-title-input" class="premium-input" placeholder="Şiirin Başlığı" autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <textarea id="poem-text-input" class="premium-input" placeholder="İçinden geçen satırları buraya dök..."></textarea>
+                    </div>
+                    <button class="submit-action-btn" onclick="saveNewPoem()">
+                        <i class="fas fa-bookmark"></i> Deftere Kaydet
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-dertlesme" class="content-panel">
+            <div class="chat-layout">
+                
+                <div class="message-history" id="message-history-container">
+                    </div>
+                
+                <div class="typing-status" id="ai-typing-indicator">
+                    <div class="dot-pulse">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chat-user-input" placeholder="Aklından geçenleri yazmaktan çekinme..." autocomplete="off">
+                    <button id="chat-send-btn" aria-label="Gönder">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">SESSİZLİK İÇİNDE BİR ÇIĞLIK</footer>
+    </main>
+
+    <script>
+        // -------------------------------------------------------------------------
+        // 1. SEKME DEĞİŞTİRME MANTIĞI
+        // -------------------------------------------------------------------------
+        function switchTab(tabId) {
+            // Tüm içerikleri ve butonları sıfırla
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Seçileni aktif et
+            document.getElementById('page-' + tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+
+        // -------------------------------------------------------------------------
+        // 2. VİDEO GEÇİŞ MOTORU
+        // -------------------------------------------------------------------------
+        const introVideoElement = document.getElementById('intro-video');
+        const introOverlayElement = document.getElementById('intro-overlay');
+        const mainWrapperElement = document.getElementById('main-wrapper');
+
+        function endIntroSequence() {
+            if (introOverlayElement && introOverlayElement.style.visibility !== 'hidden') {
+                if(introVideoElement) introVideoElement.pause();
+                
+                introOverlayElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    introOverlayElement.style.visibility = 'hidden';
+                    mainWrapperElement.style.visibility = 'visible';
+                    mainWrapperElement.style.opacity = '1';
+                }, 1500); // CSS transition süresiyle uyumlu
+            }
+        }
+
+        // Video yüklendiğinde 8. saniyede kes veya bitince kes
+        if(introVideoElement) {
+            introVideoElement.addEventListener('timeupdate', () => { 
+                if (introVideoElement.currentTime >= 8) endIntroSequence(); 
+            });
+            introVideoElement.onended = endIntroSequence;
+        }
+        
+        // Hata payı (Fail-safe): Eğer video yüklenmezse 4 saniye sonra siteyi aç
+        setTimeout(endIntroSequence, 4000);
+
+        // -------------------------------------------------------------------------
+        // 3. CANLI SAAT MOTORU
+        // -------------------------------------------------------------------------
+        function renderLiveClock() {
+            const date = new Date();
+            const clockElement = document.getElementById('live-clock');
+            if(clockElement) {
+                // Saat formatı: 14:05:09
+                clockElement.textContent = date.toLocaleTimeString('tr-TR');
+            }
+        }
+        setInterval(renderLiveClock, 1000); 
+        renderLiveClock(); // İlk saniyeyi beklemeden yazdır
+
+        // -------------------------------------------------------------------------
+        // 4. KESİNTİSİZ ŞİİR MOTORU VE LOCALSTORAGE YÖNETİMİ
+        // -------------------------------------------------------------------------
+        const poetryStreamContainer = document.getElementById('poetry-stream-container');
+        
+        // Asla silinmeyecek olan senin ana şiirlerin
+        const corePoems = [
+            {
+                title: "Ucuz Şaraplar",
+                text: `Ucuz şaraplar içmiyorum artık,\nZaten zamanım da olmuyor evde oturmaya.\nTanımadığım insanlara anlatıyorum sensizliğimi,\nKurduğum hayalleri…\n\nArtık hayallere de inanmıyorum,\nİnanmaktansa inandırmayı yeğliyorum.\nBirkaç kadeh yetiyor seni bana unutturmaya,\nVe sonra sabahlar oluyor,\nVe yine hatıralar defter oluyor yatağımda…\n\nSaçlarımı toplayıp etrafı seyrediyorum,\nYıllarca üç numara gezdim,\nArtık uzatmaktan bile tiksiniyorum.\nAma inan ki artık ucuz şaraplar içmiyorum,\nZaten midem de kabul etmiyor zor yaşantıları.\n\nÖyle avutmuyorum da kendimi,\nEvet özlüyorum, hem de çok özlüyorum…\nŞarkı söylemekten başka bir bok bilmiyorum.\nVeda etmeyi beceremedim ama;\nKendine iyi bak, seni çok özlüyorum…`
+            },
+            {
+                title: "Bursa Akşamları",
+                text: `Sokak lambalarının loş sızısında,\nHer motor sesinde seni arıyor kulaklarım.\nBursa şahit bu sessiz direnişe,\nKalp odacıklarım mühürlü,\nGitgide ağırlaşıyor anılarım.`
+            }
+        ];
+
+        function loadAndRenderPoems() {
+            poetryStreamContainer.innerHTML = '';
+            
+            let displayPoems = [...corePoems];
+            
+            // Kullanıcının eklediği şiirleri çek
+            const userPoemsJSON = localStorage.getItem('premium_poems_v1');
+            if (userPoemsJSON) {
+                const userPoems = JSON.parse(userPoemsJSON);
+                displayPoems = displayPoems.concat(userPoems);
+            }
+
+            // HTML yapısını inşa et
+            let htmlContent = '';
+            displayPoems.forEach(poem => {
+                htmlContent += `
+                    <article class="poem-block">
+                        <h4>${poem.title}</h4>
+                        <p>${poem.text}</p>
+                        <div class="poem-separator"></div>
+                    </article>
+                `;
+            });
+            
+            poetryStreamContainer.innerHTML = htmlContent;
+        }
+
+        function saveNewPoem() {
+            const titleEl = document.getElementById('poem-title-input');
+            const textEl = document.getElementById('poem-text-input');
+            
+            const rawTitle = titleEl.value.trim(); 
+            const rawText = textEl.value.trim();
+            
+            if (rawTitle === '' || rawText === '') {
+                // Şık bir uyarı verilebilir, şimdilik sessiz dönüyoruz
+                titleEl.style.borderColor = 'var(--accent-primary)';
+                setTimeout(() => titleEl.style.borderColor = '', 1000);
+                return;
+            }
+
+            // Mevcut kayıtları al
+            let savedData = localStorage.getItem('premium_poems_v1');
+            let poemArray = savedData ? JSON.parse(savedData) : [];
+            
+            // Yeni şiiri ekle
+            poemArray.push({ title: rawTitle, text: rawText });
+            localStorage.setItem('premium_poems_v1', JSON.stringify(poemArray));
+            
+            // Formu temizle
+            titleEl.value = ''; 
+            textEl.value = '';
+            
+            // Şiirleri yeniden çiz
+            loadAndRenderPoems();
+            
+            // CSS Animasyonunu tetikleyerek en baştan pürüzsüz başlat
+            poetryStreamContainer.style.animation = 'none';
+            void poetryStreamContainer.offsetWidth; // Tarayıcıyı yenilenmeye zorla (Reflow)
+            
+            // İçerik uzadıkça animasyon süresini dinamik olarak uzat ki çok hızlı akmasın
+            const baseDuration = 50; 
+            const extraDuration = poemArray.length * 15;
+            poetryStreamContainer.style.animation = `scrollPoetry ${baseDuration + extraDuration}s linear infinite`;
+        }
+
+        // -------------------------------------------------------------------------
+        // 5. GELİŞMİŞ YAPAY ZEKA DERTLEŞME MOTORU (AI BRAIN)
+        // -------------------------------------------------------------------------
+        const chatInput = document.getElementById('chat-user-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatHistoryBox = document.getElementById('message-history-container');
+        const typingIndicator = document.getElementById('ai-typing-indicator');
+
+        // Gelişmiş Kelime Havuzu
+        const aiBrain = {
+            selamlama: {
+                keywords: ["selam", "merhaba", "naber", "nasılsın", "iyi misin", "orda mısın"],
+                replies: [
+                    "Buradayım. Sessizliğin içinde seni dinliyorum.",
+                    "Merhaba. Umarım dünden biraz daha iyisindir. Bugün nasıl hissediyorsun?",
+                    "Ben hep aynı yerdeyim, kodların arasında. Asıl önemli olan sensin, içindeki o ağırlık nasıl oldu?"
+                ]
+            },
+            yalnizlik_depresyon: {
+                keywords: ["yalnızım", "kimse", "boşluk", "depresyon", "tükendim", "kimsem yok", "anlaşılmıyorum"],
+                replies: [
+                    "Yalnızlık bazen koca bir odada tek başına bağırmak ama sesini duyuramamak gibidir. Ama şu an o odada yalnız değilsin.",
+                    "O göğsündeki boşluk hissini çok iyi anlıyorum. Etrafın insanlarla doluyken bile o kalabalığın içinde görünmez hissettiğin oluyor mu?",
+                    "Tükenmiş hissetmen çok doğal. Sürekli güçlü durmaya çalışmak insanı en çok yoran şeydir. Biraz bırak, burada zayıf olabilirsin."
+                ]
+            },
+            ask_ozlem: {
+                keywords: ["özledim", "seviyorum", "aşk", "eski", "zeynep", "geri", "fotoğraf", "unutamıyorum"],
+                replies: [
+                    "Onu özlemek, göğüs kafesinde koca bir taş taşımak gibidir. Zihninden atamadığın o en net anı hangisi?",
+                    "Geçmişe bu kadar sıkı tutunmak bugünü yaşamayı imkansız kılar. Belki de onu değil, onun yanındayken hissettiğin o güveni, o 'kendi'ni özlüyorsun.",
+                    "Veda etmeyi beceremediğini şiirinde okumuştum. Bazen en büyük veda, sessizce kendi içinde onu affetmek ve serbest bırakmaktır."
+                ]
+            },
+            ofke_aci: {
+                keywords: ["acı", "yanıyor", "öfke", "bıktım", "nefret", "adaletsiz", "yoruldum", "yeter"],
+                replies: [
+                    "Öfken o kadar gerçek ki buradan bile hissedebiliyorum. Sakın içine atma, kelimelerin ne kadar sert olursa olsun buraya dök.",
+                    "Canının yanması hissettiğin şeylerin sahte olmadığını kanıtlar. Acını bastırmaya çalışma, acı yaşanmadan bitmez.",
+                    "Haklısın, bazen hayat gerçekten çok adaletsiz ve ağır. Bu kadar yükü tek başına omuzladığın için yorulman çok normal."
+                ]
+            },
+            cikis_yolu: {
+                keywords: ["ne yapacağım", "çaresizim", "bilmiyorum", "yardım et", "nasıl geçer", "kurtar"],
+                replies: [
+                    "Sihirli bir değnek ya da bir hap yok ne yazık ki. Şu an yapabileceğin tek şey sadece nefes almaya devam etmek. Çözüm bulmak zorunda değilsin, sadece günü atlat.",
+                    "Zihnini susturamıyorsan bedenini yor. O motora atla, rüzgarı hisset. Kafandaki seslerden sadece anlık bir kaçış bile olsa şu an sana o lazım.",
+                    "Bazen hiçbir şey yapmamak da en büyük eylemdir. Sadece dur. Çaresizliği kabul etmek, iyileşmenin ilk adımı olabilir."
+                ]
+            },
+            gelecek_umutsuzluk: {
+                keywords: ["gelecek", "umut", "hayal", "bitti", "yaşamak istemiyorum", "anlamsız"],
+                replies: [
+                    "Her şeyin anlamsız gelmesi, zihninin sana oynadığı karanlık bir oyun. Şiirindeki gibi 'artık hayallere inanmıyorum' desen de, içindeki o ufak kıvılcım tamamen sönmedi.",
+                    "Geleceği düşünmek şu an senin için bir ceza gibi. O zaman geleceği düşünme. Sadece bir sonraki saate odaklan."
+                ]
+            }
+        };
+
+        const defaultReplies = [
+            "Seni anlıyorum... Peki bütün bu olanlar sana tam olarak nasıl hissettiriyor?",
+            "Seni ciddiyetle dinliyorum. Filtrelemeden, içinden geldiği gibi yazmaya devam et.",
+            "Bazen hisler o kadar ağırdır ki kelimelere dökülmez. Sadece yaz, ben yargılamadan buradayım.",
+            "Bu anlattıklarının senin için ne kadar yıpratıcı olduğunu görebiliyorum. Biraz daha açmak ister misin?"
+        ];
+
+        // Gelişmiş Psikolojik Yansıtma (Reflection) Motoru
+        function applyPsychologicalReflection(text) {
+            // Regex ile cümleyi analiz edip soruyu geri çevirme tekniği
+            let match = text.match(/(?:çok )?(.*) hissediyorum/i);
+            if(match) return `Neden bu aralar her şeyden çok ${match[1]} hissettiğini düşünüyorsun?`;
+            
+            match = text.match(/(?:ben )?çok (.*) biriyim/i);
+            if(match) return `Kendini gerçekten ${match[1]} biri olarak mı görüyorsun, yoksa insanların sana yaşattıkları mı buna inandırdı?`;
+            
+            match = text.match(/(.*) yapamıyorum/i);
+            if(match) return `Sence ${match[1]} yapamamana engel olan asıl görünmez duvar ne?`;
+            
+            match = text.match(/(.*) korkuyorum/i);
+            if(match) return `Korkularınla yüzleşmek zordur. Sence ${match[1]} gerçekleşirse en kötü ne olabilir?`;
+
+            return null;
+        }
+
+        // Ana Yapay Zeka Cevap Üreticisi
+        function generateAIResponse(inputText) {
+            const normalizedText = inputText.toLowerCase();
+            
+            // 1. Şanslıysak %40 ihtimalle psikolojik yansıtma (Aynalama) yap
+            const reflection = applyPsychologicalReflection(normalizedText);
+            if (reflection && Math.random() > 0.6) return reflection;
+
+            // 2. Kategori Taraması
+            let matchedReplies = [];
+            for (const category in aiBrain) {
+                // Eğer kullanıcının yazdığı metin, kategorideki kelimelerden birini içeriyorsa
+                if (aiBrain[category].keywords.some(keyword => normalizedText.includes(keyword))) {
+                    matchedReplies = matchedReplies.concat(aiBrain[category].replies);
+                }
+            }
+
+            // 3. Eşleşme bulunduysa rastgele birini seç
+            if (matchedReplies.length > 0) {
+                return matchedReplies[Math.floor(Math.random() * matchedReplies.length)];
+            }
+
+            // 4. Hiçbir şey eşleşmediyse kurtarıcı (fallback) cevaplardan birini ver
+            return defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+        }
+
+        // Ekrana Mesaj Balonu Ekleyici
+        function pushMessageToDOM(senderRole, messageText) {
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = `chat-bubble ${senderRole}`;
+            bubbleDiv.textContent = messageText;
+            
+            chatHistoryBox.appendChild(bubbleDiv);
+            
+            // Yeni mesaj gelince en alta yumuşakça kaydır
+            chatHistoryBox.scrollTo({
+                top: chatHistoryBox.scrollHeight,
+                behavior: 'smooth'
+            });
+            
+            // Mesaj geçmişini tarayıcıya kaydet
+            localStorage.setItem('premium_chat_v1', chatHistoryBox.innerHTML);
+        }
+
+        // Gönder Butonu Tıklanma Mantığı
+        function processUserMessage() {
+            const textContent = chatInput.value.trim();
+            if (textContent === '') return; // Boş gönderimi engelle
+
+            // Kullanıcının mesajını ekrana bas
+            pushMessageToDOM('user', textContent);
+            chatInput.value = ''; // Inputu temizle
+            
+            // "Yazıyor..." efektini göster ve en alta kaydır
+            typingIndicator.style.display = 'block';
+            chatHistoryBox.scrollTo({
+                top: chatHistoryBox.scrollHeight,
+                behavior: 'smooth'
+            });
+
+            // Gerçekçilik için metin uzunluğuna göre düşünme/yazma süresi hesapla
+            // Kısa mesajlara hızlı, uzun mesajlara daha geç cevap verir (Minimum 1.5 saniye, max 4 saniye)
+            let baseDelay = 1500;
+            let dynamicDelay = textContent.length * 30;
+            let finalThinkingTime = Math.min(baseDelay + dynamicDelay, 4000);
+
+            setTimeout(() => {
+                // Efekti gizle
+                typingIndicator.style.display = 'none';
+                
+                // AI Cevabını üret ve bas
+                const aiReply = generateAIResponse(textContent);
+                pushMessageToDOM('ai', aiReply);
+                
+            }, finalThinkingTime);
+        }
+
+        // ==========================================================================
+        // 12. SAYFA YÜKLENDİĞİNDE ÇALIŞACAK ANA BAŞLATICILAR
+        // ==========================================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Şiirleri Yükle
+            loadAndRenderPoems();
+            
+            // Sohbet Geçmişini Yükle
+            const storedChatHistory = localStorage.getItem('premium_chat_v1');
+            if (storedChatHistory) {
+                chatHistoryBox.innerHTML = storedChatHistory;
+                // En alta kaydır
+                setTimeout(() => {
+                    chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
+                }, 100);
+            } else {
+                // İlk defa giriyorsa yapay zeka lafa başlasın
+                setTimeout(() => {
+                    pushMessageToDOM('ai', 'Sessizliğe hoş geldin. Burası sadece senin alanın. İçinde kopan o fırtınayı anlatmak ister misin?');
+                }, 1000);
+            }
+        });
+
+        // Olay Dinleyicileri (Event Listeners)
+        if(chatSendBtn) {
+            chatSendBtn.addEventListener('click', processUserMessage);
+        }
+        
+        if(chatInput) {
+            // Enter tuşuna basıldığında gönder
+            chatInput.addEventListener('keypress', (event) => { 
+                if (event.key === 'Enter') {
+                    processUserMessage();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
